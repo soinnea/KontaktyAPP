@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify, send_file
 from flask_cors import CORS
 from moduly.import_csv import zpracuj_csv
 from moduly.generator_pdf import vytvor_pdf, vytvor_pdf_crm, vytvor_pdf_firmy
+from moduly.export_excel import export_kontakty_excel, export_firmy_excel
+from moduly.zaloha_db import vytvor_zalohu
 import sqlite3
 import os
 import smtplib
@@ -139,6 +141,45 @@ def export_firmy_pdf():
         return send_file(os.path.join(SLOZKA_VYSTUPY, nazev), as_attachment=True)
     finally:
         conn.close()
+
+
+# ==================== EXCEL EXPORT ====================
+
+@app.route("/api/crm/export/kontakty-excel", methods=["GET"])
+def export_kontakty_excel_route():
+    conn = get_db()
+    try:
+        rows = conn.execute("""
+            SELECT k.*, f.Nazev as FirmaNazev
+            FROM Kontakty k
+            LEFT JOIN Firmy f ON k.FirmaId = f.Id
+        """).fetchall()
+        cesta = export_kontakty_excel([dict(r) for r in rows])
+        return send_file(os.path.abspath(cesta), as_attachment=True)
+    finally:
+        conn.close()
+
+
+@app.route("/api/crm/export/firmy-excel", methods=["GET"])
+def export_firmy_excel_route():
+    conn = get_db()
+    try:
+        rows = conn.execute("SELECT * FROM Firmy").fetchall()
+        cesta = export_firmy_excel([dict(r) for r in rows])
+        return send_file(os.path.abspath(cesta), as_attachment=True)
+    finally:
+        conn.close()
+
+
+# ==================== ZÁLOHA DB ====================
+
+@app.route("/api/crm/zaloha", methods=["POST"])
+def zaloha():
+    try:
+        cesta = vytvor_zalohu()
+        return jsonify({"zprava": "Záloha vytvořena", "cesta": cesta})
+    except Exception as e:
+        return jsonify({"chyba": str(e)}), 500
 
 
 # ==================== HROMADNÝ EMAIL ====================

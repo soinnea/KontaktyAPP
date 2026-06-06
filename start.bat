@@ -1,11 +1,8 @@
 @echo off
 echo Spouštím KontaktyAPI...
-start "KontaktyAPI" cmd /k "cd KontaktyAPI && dotnet run"
-
+start "KontaktyAPI" cmd /k "cd /d %~dp0KontaktyAPI && dotnet run"
 echo Spouštím Flask...
-start "Flask" cmd /k "cd kontakty-flask && venv\Scripts\activate && python hlavni.py"
-
+start "Flask" cmd /k "cd /d %~dp0kontakty-flask && venv\Scripts\activate && python hlavni.py"
 echo Spouštím Frontend...
-start "Frontend" cmd /k "cd kontakty-frontend && npm start"
-
+start "Frontend" cmd /k "cd /d %~dp0kontakty-frontend && npm install && npm start"
 echo Hotovo! Otevři http://localhost:3000

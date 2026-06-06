@@ -3,8 +3,33 @@ from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
+from reportlab.lib.fonts import addMapping
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from datetime import datetime
 import os
+import urllib.request
+
+
+def _registruj_fonty():
+    if 'DejaVuSans' not in pdfmetrics.getRegisteredFontNames():
+        urls = {
+            'DejaVuSans.ttf': 'https://cdn.jsdelivr.net/npm/dejavu-fonts-ttf@2.37.3/ttf/DejaVuSans.ttf',
+            'DejaVuSans-Bold.ttf': 'https://cdn.jsdelivr.net/npm/dejavu-fonts-ttf@2.37.3/ttf/DejaVuSans-Bold.ttf'
+        }
+        font_dir = os.path.dirname(__file__)
+        for soubor, url in urls.items():
+            cesta_fontu = os.path.join(font_dir, soubor)
+            if not os.path.exists(cesta_fontu):
+                urllib.request.urlretrieve(url, cesta_fontu)
+            pdfmetrics.registerFont(TTFont(soubor.replace('.ttf', ''), cesta_fontu))
+
+        addMapping('DejaVuSans', 0, 0, 'DejaVuSans')
+        addMapping('DejaVuSans', 1, 0, 'DejaVuSans-Bold')
+        addMapping('DejaVuSans', 0, 1, 'DejaVuSans')
+        addMapping('DejaVuSans', 1, 1, 'DejaVuSans-Bold')
+
+_registruj_fonty()
 
 
 def vytvor_pdf(kontakty):
@@ -12,11 +37,11 @@ def vytvor_pdf(kontakty):
     cesta = os.path.join("vystupy", nazev)
 
     pdf = canvas.Canvas(cesta)
-    pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(50, 800, "Prehled kontaktu CRM")
+    pdf.setFont("DejaVuSans-Bold", 16)
+    pdf.drawString(50, 800, "Přehled kontaktů CRM")
 
     y = 760
-    pdf.setFont("Helvetica", 11)
+    pdf.setFont("DejaVuSans", 11)
 
     for kontakt in kontakty:
         pdf.drawString(50, y, f"{kontakt['jmeno']} - {kontakt['email']}")
@@ -35,6 +60,8 @@ def vytvor_pdf_crm(kontakty, nazev_souboru="crm_export"):
 
     doc = SimpleDocTemplate(cesta, pagesize=A4)
     styles = getSampleStyleSheet()
+    styles['Title'].fontName = 'DejaVuSans-Bold'
+    styles['Normal'].fontName = 'DejaVuSans'
     elements = []
 
     elements.append(Paragraph("CRM - Seznam kontaktů", styles['Title']))
@@ -57,7 +84,8 @@ def vytvor_pdf_crm(kontakty, nazev_souboru="crm_export"):
     tabulka.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1976d2')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
+        ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
         ('FONTSIZE', (0, 0), (-1, -1), 7),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f5f5f5')]),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
@@ -75,6 +103,8 @@ def vytvor_pdf_firmy(firmy):
 
     doc = SimpleDocTemplate(cesta, pagesize=A4)
     styles = getSampleStyleSheet()
+    styles['Title'].fontName = 'DejaVuSans-Bold'
+    styles['Normal'].fontName = 'DejaVuSans'
     elements = []
 
     elements.append(Paragraph("CRM - Seznam firem", styles['Title']))
@@ -96,7 +126,8 @@ def vytvor_pdf_firmy(firmy):
     tabulka.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1976d2')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
+        ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
         ('FONTSIZE', (0, 0), (-1, -1), 8),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f5f5f5')]),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
