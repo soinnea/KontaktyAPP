@@ -23,7 +23,7 @@ DB_PATH = "../KontaktyAPI/crm.db"
 nactene_kontakty = []
 
 
-# ==================== HELPER ====================
+
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -31,7 +31,7 @@ def get_db():
     return conn
 
 
-# ==================== PŮVODNÍ ENDPOINTY ====================
+# ENDPOINTY
 
 @app.route("/")
 def uvod():
@@ -63,7 +63,7 @@ def stahnout(nazev):
     return send_file(os.path.join(SLOZKA_VYSTUPY, nazev), as_attachment=True)
 
 
-# ==================== CRM STATISTIKY ====================
+# CRM STATISTIKY - pro grafy na uvodni strance (vykreslene pomoci react knihovny)
 
 @app.route("/api/crm/statistiky", methods=["GET"])
 def statistiky():
@@ -111,7 +111,7 @@ def statistiky():
         conn.close()
 
 
-# ==================== PDF EXPORT ====================
+# PDF EXPORT
 
 @app.route("/api/crm/export/kontakty-pdf", methods=["GET"])
 def export_kontakty_pdf():
@@ -143,7 +143,7 @@ def export_firmy_pdf():
         conn.close()
 
 
-# ==================== EXCEL EXPORT ====================
+# EXCEL EXPORT
 
 @app.route("/api/crm/export/kontakty-excel", methods=["GET"])
 def export_kontakty_excel_route():
@@ -171,7 +171,7 @@ def export_firmy_excel_route():
         conn.close()
 
 
-# ==================== ZÁLOHA DB ====================
+# ZÁLOHA DB - dostupne tlacitko pouze ze zalozky firem na strance
 
 @app.route("/api/crm/zaloha", methods=["POST"])
 def zaloha():
@@ -182,7 +182,7 @@ def zaloha():
         return jsonify({"chyba": str(e)}), 500
 
 
-# ==================== HROMADNÝ EMAIL ====================
+# HROMADNÝ EMAIL - moznost poslat email vsem vybranym kontaktum- prislo mi to zajimave pri projizdeni moznosti v dokumentaci k python Flask- nevyzkouseno
 
 @app.route("/api/crm/hromadny-email", methods=["POST"])
 def hromadny_email():
