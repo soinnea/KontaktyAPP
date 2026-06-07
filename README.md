@@ -1,8 +1,14 @@
 # KontaktyAPP
 
+## Spuštění projektu (`start.bat`)
+
+Projekt obsahuje BAT skript `start.bat`, který automaticky spustí všechny tři části aplikace najednou – ASP.NET Core API, Flask backend a React frontend. Stačí dvakrát kliknout na `start.bat` v kořenové složce projektu a aplikace bude dostupná na `http://localhost:3000`.
+
 ## Python / Flask backend (`kontakty-flask`)
 
 Flask backend běžící na `http://localhost:5001`, který poskytuje REST API pro export dat, statistiky a zálohu databáze. Vyžaduje **Python 3.10+**.
+
+
 
 ### Použité knihovny
 
@@ -16,7 +22,7 @@ Flask backend běžící na `http://localhost:5001`, který poskytuje REST API p
 | **smtplib** | Vestavěná Python knihovna pro odesílání hromadných emailů přes Gmail SMTP. |
 
 ### Struktura
-
+Jednotlivé části kodu jsou uloženy v modulech
 Složka `moduly/` obsahuje jednotlivé funkční celky – `generator_pdf.py`, `export_excel.py`, `zaloha_db.py` a `import_csv.py`. Soubor `hlavni.py` tyto moduly importuje a propojuje je s Flask endpointy. Vygenerované soubory se ukládají do složky `vystupy/`.
 
 ### API endpointy
