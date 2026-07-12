@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>CRM Flask Tools</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f5f5f5; }
+        h1 { color: #1976d2; }
+        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        button { background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #1565c0; }
+        .success { color: green; }
+        .error { color: red; }
+        input[type="file"] { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>CRM Flask Tools</h1>
+
+    <div class="card">
+        <h2>Import CSV</h2>
+        <input type="file" id="csvSoubor" accept=".csv">
+        <button onclick="importCsv()">Importovat CSV</button>
+        <div id="csvVysledek"></div>
+    </div>
+
+    <div class="card">
+        <h2>Export PDF</h2>
+        <button onclick="exportKontaktyPdf()">Exportovat kontakty do PDF</button>
+        <button onclick="exportFirmyPdf()">Exportovat firmy do PDF</button>
+        <div id="pdfVysledek"></div>
+    </div>
+
+    <script>
+        async function importCsv() {
+            const soubor = document.getElementById('csvSoubor').files[0];
+            if (!soubor) { alert('Vyberte soubor'); return; }
+            const formData = new FormData();
+            formData.append('file', soubor);
+            const res = await fetch('/api/import/csv', { method: 'POST', body: formData });
+            const data = await res.json();
+            document.getElementById('csvVysledek').innerHTML =
+                `<p class="success">Načteno: ${data.pocet} kontaktů</p>
+                 ${data.chyby.length ? '<p class="error">Chyby: ' + data.chyby.join(', ') + '</p>' : ''}`;
+        }
+
+        async function exportKontaktyPdf() {
+            window.open('/api/crm/export/kontakty-pdf', '_blank');
+        }
+
+        async function exportFirmyPdf() {
+            window.open('/api/crm/export/firmy-pdf', '_blank');
+        }
+    </script>
+</body>
+</html>
